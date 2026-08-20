@@ -1,5 +1,5 @@
 # This workflow integrates QwietAI preZero SAST with GitHub and exports SARIF results to the Security Tab
-name: QwietAISecTab
+name: QwietAI
 
 on:
   pull_request:
@@ -17,11 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup Java JDK v8
+    - name: Setup Java JDK v11
       uses: actions/setup-java@v3
       with:
         distribution: zulu
-        java-version: 8
+        java-version: 11
 
     - name: Maven Build
       run: |
@@ -37,8 +37,8 @@ jobs:
       id: extract_branch
 
     - name: QwietAI preZero Analysis
-      #run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --verbose --app QWIETAI-Java --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }}
-      run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --verbose --app QWIETAI-Java --container alexsotoharness/spring-boot-hello-world --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }}
+      run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --verbose --app QWIETAI-Bunny --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }}
+      #run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --verbose --app QWIETAI-Bunny --container alexsotoharness/spring-boot-hello-world --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }}
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
         SHIFTLEFT_API_HOST: www.shiftleft.io
@@ -63,11 +63,11 @@ jobs:
     - name: QwietAI Gathering Data
       run: |
         #APP_NAME=${{ github.event.repository.name }}
-        python3 ${GITHUB_WORKSPACE}/export.py -f sarif -a QWIETAIJava
+        python3 ${GITHUB_WORKSPACE}/export.py -f sarif -a QWIETAI-Bunny
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
     - name: QwietAI Uploading SAST to GitHub Security Tab
       uses: github/codeql-action/upload-sarif@v3  # Updated to v3
       with:
-        sarif_file: ./ngsast-report-QWIETAIJava.sarif  # Correct dynamic path for SARIF output
+        sarif_file: ./ngsast-report-QWIETAI-Bunny.sarif  # Correct dynamic path for SARIF output
